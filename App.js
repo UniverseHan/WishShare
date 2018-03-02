@@ -9,8 +9,11 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  Button
 } from 'react-native';
+import Friends from './components/Friends';
+import Contacts from 'react-native-contacts';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -21,18 +24,37 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  constructor() {
+    super();
+    this.loadContacts = this.loadContacts.bind(this);
+    this.state = {
+      contacts: []
+    }
+  }
+  
+  loadContacts() {
+    Contacts.getAll((err, contacts) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      console.log(contacts);
+      this.setState({contacts: contacts});
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to React Native!
+          Birday list
         </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
+        <Button title="Load" onPress={this.loadContacts}/>
         <Text style={styles.instructions}>
           {instructions}
         </Text>
+        <Friends data={this.state.contacts}></Friends>
       </View>
     );
   }
@@ -41,18 +63,16 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    margin: 10
   },
   instructions: {
     textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+    marginBottom: 5
   },
 });
